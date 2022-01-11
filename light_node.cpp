@@ -365,19 +365,21 @@ void LightNode::setHaEndpoint(const deCONZ::SimpleDescriptor &endpoint)
                 }
                 else if (i->id() == COLOR_CLUSTER_ID)
                 {
-                    if ((manufacturerCode() == VENDOR_NONE && deviceId == DEV_ID_ZLL_DIMMABLE_LIGHT) ||
-                        (manufacturerCode() == VENDOR_NONE && deviceId == DEV_ID_LEVEL_CONTROL_SWITCH) ||
-                        (manufacturer() == QLatin1String("iluminize") && modelId() == QLatin1String("511.012")))
+                    if (deviceId != DEV_ID_ZLL_DIMMABLE_LIGHT &&
+                        deviceId != DEV_ID_ZLL_COLOR_LIGHT &&
+                        deviceId != DEV_ID_ZLL_EXTENDED_COLOR_LIGHT &&
+                        deviceId != DEV_ID_ZLL_COLOR_TEMPERATURE_LIGHT &&
+                        deviceId != DEV_ID_Z30_COLOR_TEMPERATURE_LIGHT &&
+                        deviceId != DEV_ID_Z30_EXTENDED_COLOR_LIGHT &&
+                        deviceId != DEV_ID_ZLL_COLOR_CONTROLLER &&
+                        deviceId != DEV_ID_ZLL_COLOR_SCENE_CONTROLLER)
                     {
-                        // GLEDOPTO GL-C-009 advertises non-functional color cluster
-                        // ORVIBO T10D1ZW in-wall dimmer does the same
-                        // iluminize 511.012 even
-                    }
-                    else
-                    {
-                        addItem(DataTypeString, RStateColorMode)->setValue(QVariant("hs"));
+                        // Skip color cluster for non-color devices
+                        continue;
                     }
 
+                    addItem(DataTypeString, RStateColorMode)->setValue(QVariant("hs"));
+                    
                     if (modelId() == QLatin1String("lumi.light.aqcn02"))
                     {
                         // correct wrong device id
